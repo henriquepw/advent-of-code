@@ -1,10 +1,9 @@
 use std::fs;
 
-fn part_1() -> u32 {
-    let inputs = fs::read_to_string("src/inputs/01.txt").expect("input not found");
+fn part_1(input: &String) -> u32 {
     let mut total = 0;
 
-    inputs.split("\n").for_each(|line| {
+    input.split("\n").for_each(|line| {
         let mut first = '0';
         let mut last = '0';
         let mut has_first_num = false;
@@ -26,20 +25,6 @@ fn part_1() -> u32 {
     total
 }
 
-/*
-    one
-    two
-    six
-
-    four
-    five
-    nine
-
-    three
-    seven
-    eight
-*/
-
 fn calibrate(has_first_num: &mut bool, first: &mut char, last: &mut char, value: char) {
     if !*has_first_num {
         *first = value;
@@ -49,11 +34,10 @@ fn calibrate(has_first_num: &mut bool, first: &mut char, last: &mut char, value:
     *last = value
 }
 
-fn part_2() -> u32 {
-    let inputs = fs::read_to_string("src/inputs/01.txt").expect("input not found");
+fn part_2(input: &String) -> u32 {
     let mut total = 0;
 
-    inputs.split("\n").for_each(|line| {
+    input.split("\n").for_each(|line| {
         let mut first = '0';
         let mut last = '0';
         let mut has_first_num = false;
@@ -105,6 +89,8 @@ fn part_2() -> u32 {
 }
 
 fn main() {
-    println!("Part 1: {}", part_1());
-    println!("Part 2: {}", part_2());
+    let input = fs::read_to_string("src/inputs/01").expect("input not found");
+
+    println!("Part 1: {}", part_1(&input));
+    println!("Part 2: {}", part_2(&input));
 }

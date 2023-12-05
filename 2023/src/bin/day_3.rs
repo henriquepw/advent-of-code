@@ -81,18 +81,6 @@ fn part_1(input: &String) -> u32 {
         }
     });
 
-    println!("NUMBERS LEN {}", numbers.len());
-
-    // numbers.iter().for_each(|n| {
-    //     print!("NUMBER -> {} | ", n.value);
-    //     n.index.iter().for_each(|i| print!("({}, {}), ", i.x, i.y));
-    //     println!("");
-    // });
-
-    // symbols
-    //     .iter()
-    //     .for_each(|s| println!("SYMBOL ON -> {},{}", s.x, s.y));
-
     numbers
         .iter()
         .map(|n| {
@@ -110,10 +98,82 @@ fn part_1(input: &String) -> u32 {
         .sum()
 }
 
-fn part_2(_input: &String) -> u32 {
-    let total = 0;
+fn part_2(input: &String) -> u32 {
+    let motor = input.split("\n");
+    let mut symbols: Vec<Index> = Vec::new();
+    let mut numbers: Vec<Number> = Vec::new();
 
-    total
+    motor.enumerate().for_each(|(x, line)| {
+        let mut aux_number = String::from("");
+        let mut aux_index: Vec<Index> = vec![];
+
+        line.chars().enumerate().for_each(|(y, c)| {
+            if c.is_digit(10) {
+                aux_number.push(c);
+                let (xx, yy) = parse_coords(x, y);
+
+                aux_index.push(Index {
+                    x: xx - 1,
+                    y: yy - 1,
+                });
+                aux_index.push(Index { x: xx - 1, y: yy });
+                aux_index.push(Index {
+                    x: xx - 1,
+                    y: yy + 1,
+                });
+                aux_index.push(Index { x: xx, y: yy - 1 });
+                aux_index.push(Index { x: xx, y: yy + 1 });
+                aux_index.push(Index {
+                    x: xx + 1,
+                    y: yy - 1,
+                });
+                aux_index.push(Index { x: xx + 1, y: yy });
+                aux_index.push(Index {
+                    x: xx + 1,
+                    y: yy + 1,
+                });
+            } else {
+                if aux_number != "" {
+                    numbers.push(Number {
+                        value: aux_number.parse().unwrap(),
+                        index: aux_index.clone(),
+                    });
+                    aux_number = String::from("");
+                    aux_index.clear();
+                }
+
+                if c == '*' {
+                    symbols.push(make_index(x, y))
+                }
+            }
+        });
+
+        if aux_number != "" {
+            numbers.push(Number {
+                value: aux_number.parse().unwrap(),
+                index: aux_index.clone(),
+            });
+        }
+    });
+
+    symbols
+        .iter()
+        .map(|symbol| {
+            let mut values: Vec<u32> = vec![];
+
+            numbers.iter().for_each(|num| {
+                let is_adjacent = num.index.iter().any(|i| symbol.x == i.x && symbol.y == i.y);
+                if is_adjacent {
+                    values.push(num.value);
+                }
+            });
+
+            match values.len() {
+                2 => values[0] * values[1],
+                _ => 0,
+            }
+        })
+        .sum()
 }
 
 fn main() {

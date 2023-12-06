@@ -13,17 +13,33 @@ fn part_1(input: &String) -> u32 {
             let my_numbers: HashSet<&str> = HashSet::from_iter(parse_list(lists.1));
             let count = winning_numbers.filter(|w| my_numbers.contains(*w)).count();
 
-            if count == 0 {
-                return 0;
+            match count {
+                0 => 0,
+                1 => 1,
+                n => 2 << n - 2,
             }
-
-            u32::pow(2, count as u32 - 1)
         })
         .sum()
 }
 
-fn part_2(_input: &String) -> u32 {
-    0
+fn part_2(input: &String) -> u32 {
+    let lines = input.split("\n");
+    let mut copies = vec![1; lines.clone().count()];
+
+    lines.enumerate().for_each(|(index, line)| {
+        let lists = line.split_once(": ").unwrap().1.split_once(" | ").unwrap();
+        let winning_numbers = parse_list(lists.0);
+        let my_numbers: HashSet<&str> = HashSet::from_iter(parse_list(lists.1));
+        let count = winning_numbers.filter(|w| my_numbers.contains(*w)).count();
+
+        for n in 1..count + 1 {
+            if index + n < copies.len() {
+                copies[index + n] += copies[index];
+            }
+        }
+    });
+
+    copies.iter().sum()
 }
 
 fn main() {

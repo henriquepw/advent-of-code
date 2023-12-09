@@ -6,11 +6,6 @@ struct Map {
     range: u64,
 }
 
-// struct Seed {
-//     to: u64,
-//     range: u64,
-// }
-
 fn get_map_value(from: u64, list: &Vec<Map>) -> u64 {
     for map in list {
         if from >= map.from && from < map.from + map.range {
@@ -51,6 +46,11 @@ fn part_1(input: &String) -> u64 {
         .min()
         .unwrap()
 }
+
+// struct Seed {
+//     to: u64,
+//     range: u64,
+// }
 
 fn part_2(_input: &String) -> u64 {
     // let mut maps: HashMap<String, Vec<Map>> = HashMap::new();

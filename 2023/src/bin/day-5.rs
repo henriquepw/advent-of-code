@@ -6,6 +6,29 @@ struct Map {
     range: u64,
 }
 
+fn get_maps<'a>(chunks: impl Iterator<Item = &'a str>) -> Vec<Vec<Map>> {
+    chunks
+        .map(|chunk| {
+            let mut map = Vec::new();
+
+            chunk.split("\n").skip(1).for_each(|line| {
+                let values = line
+                    .split(" ")
+                    .map(|l| l.parse::<u64>().unwrap())
+                    .collect::<Vec<u64>>();
+
+                map.push(Map {
+                    to: values[0],
+                    from: values[1],
+                    range: values[2],
+                });
+            });
+
+            map
+        })
+        .collect()
+}
+
 fn get_value(from: u64, list: &Vec<Map>) -> u64 {
     for map in list {
         if from >= map.from && from < map.from + map.range {
@@ -17,28 +40,9 @@ fn get_value(from: u64, list: &Vec<Map>) -> u64 {
 }
 
 fn part_1(input: &String) -> u64 {
-    let mut maps: Vec<Vec<Map>> = vec![];
     let mut chunks = input.trim_end().split("\n\n");
     let seeds = chunks.next().unwrap().replace("seeds: ", "");
-
-    chunks.for_each(|chunk| {
-        let mut map = Vec::new();
-
-        chunk.split("\n").skip(1).for_each(|line| {
-            let values = line
-                .split(" ")
-                .map(|l| l.parse::<u64>().unwrap())
-                .collect::<Vec<u64>>();
-
-            map.push(Map {
-                to: values[0],
-                from: values[1],
-                range: values[2],
-            });
-        });
-
-        maps.push(map);
-    });
+    let maps = get_maps(chunks);
 
     seeds
         .split(" ")
@@ -71,7 +75,6 @@ fn get_range(list: &Vec<Map>, from: u64, prev_range: u64) -> (u64, u64) {
 }
 
 fn part_2(input: &String) -> u64 {
-    let mut maps: Vec<Vec<Map>> = vec![];
     let mut chunks = input.trim_end().split("\n\n");
 
     let seed_str = chunks.next().unwrap().replace("seeds: ", "");
@@ -81,24 +84,7 @@ fn part_2(input: &String) -> u64 {
         range: items[i].parse().unwrap(),
     });
 
-    chunks.for_each(|chunk| {
-        let mut map = Vec::new();
-
-        chunk.split("\n").skip(1).for_each(|line| {
-            let values = line
-                .split(" ")
-                .map(|l| l.parse::<u64>().unwrap())
-                .collect::<Vec<u64>>();
-
-            map.push(Map {
-                to: values[0],
-                from: values[1],
-                range: values[2],
-            });
-        });
-
-        maps.push(map);
-    });
+    let maps = get_maps(chunks);
 
     seeds
         .map(|seed| {

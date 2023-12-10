@@ -1,25 +1,21 @@
-seed 1: 
-  start: 79
-  range: 14
-seed 2: 
-  start: 55
-  range: 13
-
-seed-to-soil map:
+map:
+  range: 1
+  seed: 98
   soil: 50
-  seed: 92
-  range: 2
---
-  soil: 42
-  seed: 50
-  range: 48
+  fertilizer: 35
+  water: 24
+  light: 94
+  temperature: 62
+  humidity: 
+  location:
 
-
-my-seed-to-soil map:
-  soil: 71
-  seed: 79
-  range: 14
---
-  soil: 47
-  seed: 55
-  range: 13
+map:
+  range: 1
+  seed: 98
+  soil: 50
+  fertilizer: 35
+  water: 24
+  light: 18
+  temperature:
+  humidity:
+  location:

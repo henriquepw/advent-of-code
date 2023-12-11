@@ -90,11 +90,7 @@ fn part_2(input: &String) -> u64 {
         .map(|seed| {
             let mut result = 18446744073709551615;
             let mut i = seed.start;
-            loop {
-                if i > seed.start + seed.range - 1 {
-                    break;
-                }
-
+            while i <= seed.start + seed.range - 1 {
                 let (value, range) = maps.iter().fold((i, 0), |(from, prev_range), list| {
                     get_range(list, from, prev_range)
                 });

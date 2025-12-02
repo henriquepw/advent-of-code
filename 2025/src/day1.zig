@@ -62,9 +62,10 @@ pub fn part2() !void {
             result += @divTrunc(total, 100);
         }
         if (total <= 0) {
-            const laps = @divTrunc(-total, 100) + 1;
-            std.debug.print("total {d} - {d}\n", .{ total, laps });
-            result += laps;
+            result += @divTrunc(-total, 100);
+            if (dial != 0) {
+                result += 1;
+            }
         }
 
         dial = rotate(dial, spin);

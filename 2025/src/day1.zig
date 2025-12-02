@@ -1,4 +1,5 @@
 const std = @import("std");
+const utils = @import("utils.zig");
 
 fn getSpin(line: []u8) !isize {
     const spin = try std.fmt.parseInt(isize, line[1..], 10);
@@ -21,17 +22,12 @@ fn rotate(point: isize, value: isize) isize {
 pub fn part1() !void {
     std.debug.print("Day 1:\n", .{});
 
-    const file = try std.fs.cwd().openFile("inputs/01.txt", .{});
-    defer file.close();
-
-    const buffer = try std.heap.page_allocator.alloc(u8, 1024);
-    defer std.heap.page_allocator.free(buffer);
-
-    var reader = file.reader(buffer);
+    var input = try utils.readInput("inputs/01.txt");
+    defer input.close();
 
     var result: usize = 0;
     var dial: isize = 50;
-    while (try reader.interface.takeDelimiter('\n')) |line| {
+    while (try input.lines()) |line| {
         const spin = try getSpin(line);
 
         dial = rotate(dial, spin);
@@ -44,17 +40,12 @@ pub fn part1() !void {
 }
 
 pub fn part2() !void {
-    const file = try std.fs.cwd().openFile("inputs/01.txt", .{});
-    defer file.close();
-
-    const buffer = try std.heap.page_allocator.alloc(u8, 1024);
-    defer std.heap.page_allocator.free(buffer);
-
-    var reader = file.reader(buffer);
+    var input = try utils.readInput("inputs/01.txt");
+    defer input.close();
 
     var result: isize = 0;
     var dial: isize = 50;
-    while (try reader.interface.takeDelimiter('\n')) |line| {
+    while (try input.lines()) |line| {
         const spin = try getSpin(line);
 
         const total = dial + spin;

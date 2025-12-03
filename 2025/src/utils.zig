@@ -4,8 +4,8 @@ const Input = struct {
     file: std.fs.File,
     buffer: []u8,
     reader: std.fs.File.Reader,
-    pub fn lines(self: *Input) error{ ReadFailed, StreamTooLong }!?[]u8 {
-        return self.reader.interface.takeDelimiter('\n');
+    pub fn next(self: *Input, delimiter: ?u8) error{ ReadFailed, StreamTooLong }!?[]u8 {
+        return self.reader.interface.takeDelimiter(delimiter orelse '\n');
     }
     pub fn close(self: *Input) void {
         self.file.close();

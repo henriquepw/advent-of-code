@@ -27,7 +27,7 @@ pub fn part1() !void {
 
     var result: usize = 0;
     var dial: isize = 50;
-    while (try input.lines()) |line| {
+    while (try input.next()) |line| {
         const spin = try getSpin(line);
 
         dial = rotate(dial, spin);
@@ -45,7 +45,7 @@ pub fn part2() !void {
 
     var result: isize = 0;
     var dial: isize = 50;
-    while (try input.lines()) |line| {
+    while (try input.next()) |line| {
         const spin = try getSpin(line);
 
         const total = dial + spin;

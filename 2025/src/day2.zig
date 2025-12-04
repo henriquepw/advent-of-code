@@ -3,44 +3,42 @@ const utils = @import("utils.zig");
 
 const allocator = std.heap.page_allocator;
 
-fn getId(half: usize) !usize {
-    const id = try std.fmt.allocPrint(allocator, "{d}{d}", .{ half, half });
-    defer allocator.free(id);
-    return std.fmt.parseInt(usize, id, 10);
+pub fn generateInvalidId(num: usize, reps: usize) !usize {
+    var result: []u8 = "";
+    for (0..reps) |_| {
+        result = try std.fmt.allocPrint(allocator, "{s}{d}", .{ result, num });
+    }
+
+    return std.fmt.parseInt(usize, result, 10);
+}
+
+pub fn getInitialValue(size: usize) usize {
+    if (size <= 1) {
+        return 1;
+    }
+
+    return std.math.pow(usize, 10, size - 1);
 }
 
 fn getInvalidIds(head: []const u8, tail: []const u8) !usize {
     var sum: usize = 0;
-    const is_head_even = head.len % 2 == 0;
+    const end = try std.fmt.parseInt(usize, tail, 10);
+    const min = try std.fmt.parseInt(usize, head, 10);
 
     var start_haft: usize = 0;
-    if (is_head_even) {
+    if (head.len % 2 == 0) {
         start_haft = try std.fmt.parseInt(usize, head[0 .. head.len / 2], 10);
     } else {
         start_haft = std.math.pow(usize, 10, (head.len - 1) / 2);
     }
 
-    if (start_haft == 0) {
-        return sum;
-    }
-
-    var id: usize = 0;
-    var count: usize = 0;
-    const end = try std.fmt.parseInt(usize, tail, 10);
-    const min = try std.fmt.parseInt(usize, head, 10);
-    std.debug.print(" -- start {d} - end {d}\n", .{ start_haft, end });
-    while (true) {
-        id = try getId(start_haft);
-        if (id > end) {
-            break;
-        }
-
-        count += 1;
-        start_haft += 1;
+    var id: usize = try generateInvalidId(start_haft, 2);
+    while (id <= end) : (id = try generateInvalidId(start_haft, 2)) {
         if (id > min) {
             sum += id;
-            std.debug.print(" -- {d} - id {d}\n", .{ count, id });
         }
+
+        start_haft += 1;
     }
 
     return sum;
@@ -53,16 +51,72 @@ pub fn part1() !void {
     defer input.close();
 
     var result: usize = 0;
-    var count: usize = 0;
     while (try input.next(',')) |range| {
-        count += 1;
         var split = std.mem.splitScalar(u8, range, '-');
         const head = split.next() orelse unreachable;
         const tail = std.mem.trim(u8, split.next() orelse unreachable, "\t\n\r");
 
-        std.debug.print("range {d} - {s} <> {s} \n", .{ count, head, tail });
         result += try getInvalidIds(head, tail);
     }
 
-    std.debug.print("result {d}\n", .{result});
+    std.debug.print(" -part 1 = {d}\n", .{result});
+}
+
+const Range = struct {
+    min: usize,
+    max: usize,
+};
+
+pub fn part2() !void {
+    var result: usize = 0;
+    var input = try utils.readInput("inputs/02.txt");
+    defer input.close();
+
+    var ranges: std.ArrayList(Range) = .empty;
+    defer ranges.deinit(allocator);
+
+    while (try input.next(',')) |range| {
+        var split = std.mem.splitScalar(u8, range, '-');
+        const head = split.next() orelse unreachable;
+        const tail = std.mem.trim(u8, split.next() orelse unreachable, "\t\n\r");
+        const min = try std.fmt.parseInt(usize, head, 10);
+        const max = try std.fmt.parseInt(usize, tail, 10);
+
+        try ranges.append(allocator, .{
+            .min = min,
+            .max = max,
+        });
+    }
+
+    var invalids = std.AutoHashMap(usize, void).init(allocator);
+    defer invalids.deinit();
+
+    const digits = 10;
+    for (1..(digits / 2) + 1) |num_size| {
+        const min = getInitialValue(num_size);
+        const max = getInitialValue(num_size + 1);
+        for (min..max) |num| {
+            for (2..digits + 1) |final_size| {
+                const reps = final_size / num_size;
+                if (final_size % num_size != 0 or reps < 2) {
+                    continue;
+                }
+
+                const id = try generateInvalidId(num, reps);
+                if (invalids.get(id) != null) {
+                    continue;
+                }
+
+                for (ranges.items) |range| {
+                    if (id >= range.min and id <= range.max) {
+                        result += id;
+                        try invalids.put(id, {});
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    std.debug.print(" -part 2 = {d}\n", .{result});
 }

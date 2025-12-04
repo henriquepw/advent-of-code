@@ -88,9 +88,6 @@ pub fn part2() !void {
         });
     }
 
-    var invalids = std.AutoHashMap(usize, void).init(allocator);
-    defer invalids.deinit();
-
     const digits = 10;
     for (1..(digits / 2) + 1) |num_size| {
         const min = getInitialValue(num_size);
@@ -103,14 +100,9 @@ pub fn part2() !void {
                 }
 
                 const id = try generateInvalidId(num, reps);
-                if (invalids.get(id) != null) {
-                    continue;
-                }
-
                 for (ranges.items) |range| {
                     if (id >= range.min and id <= range.max) {
                         result += id;
-                        try invalids.put(id, {});
                         break;
                     }
                 }

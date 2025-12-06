@@ -10,5 +10,5 @@ pub fn main() !void {
     // try day2.part1();
     // try day2.part2();
     _ = try day3.part1("inputs/03");
-    // try day3.part2();
+    _ = try day3.part2("inputs/03");
 }
